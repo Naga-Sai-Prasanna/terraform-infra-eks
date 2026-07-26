@@ -1,0 +1,30 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: roboshop-gateway
+  namespace: roboshop
+spec:
+  gatewayClassName: roboshop-aws-alb
+  infrastructure:
+    parametersRef:
+      group: gateway.k8s.aws
+      kind: LoadBalancerConfiguration
+      name: roboshop-aws-alb-config
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: https
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      options:
+      # after run 70 acm please chane teh certificate arn here
+        gateway.k8s.aws/certificate-arn: "arn:aws:acm:us-east-1:864981724645:certificate/20685a44-1f9c-463e-9ba9-f816e86cb6f9"
+    allowedRoutes:
+      namespaces:
+        from: Same
